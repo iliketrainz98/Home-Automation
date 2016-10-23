@@ -65,34 +65,49 @@ void loop() {
   Serial.println(req);
   client.flush();
   
-  // Match the request
-  int val;
-  if (req.indexOf("/gpio/0") != -1)
-    val = 0;
-  else if (req.indexOf("/gpio/1") != -1)
-    val = 1;
-  else {
-    Serial.println("invalid request");
-    client.stop();
+  int startOfGpioString = req.indexOf("/gpio/");
+  if(startOfGpioString != -1)
+  {
+    /*
+     * 6 = length of /gpio/
+     */
+    int startOfFadeString = startOfGpioString + 6;
+    
+    
+    
+    int fadeNumberSearchLocation = startOfFadeString;
+    String fadeNumberAsString = "";
+    while(req.charAt(fadeNumberSearchLocation) != ' ')
+    {
+      fadeNumberAsString.concat(req.charAt(fadeNumberSearchLocation));
+      fadeNumberSearchLocation++;
+    }
+    
+    fadeNumber = fadeNumberAsString.toInt();
+    analogueWrite(2, fadeNumber * 10.24);
+    
+    client.flush();
+
+    // Prepare the response
+    String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>\r\nGPIO is now ";
+    s += fadeNumberAsString;
+    s += "</html>\n";
+
+    // Send the response to the client
+    client.print(s);
+    delay(1);
+    Serial.println("Client disonnected");
     return;
   }
-
-  // Set GPIO2 according to the request
-  digitalWrite(2, val);
-  
-  client.flush();
-
-  // Prepare the response
-  String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>\r\nGPIO is now ";
-  s += (val)?"high":"low";
-  s += "</html>\n";
-
-  // Send the response to the client
-  client.print(s);
-  delay(1);
-  Serial.println("Client disonnected");
-
-  // The client will actually be disconnected 
-  // when the function returns and 'client' object is detroyed
+  else
+  {
+    Serial.println("invalid request");
+    client.flush();
+    // Send a 400 which means "The client fucked up - try again"
+    String returnString = "HTTP/1.1 400 BAD REQUEST"
+    client.print(s)
+    client.stop()
+    return;
+  }
 }
 
