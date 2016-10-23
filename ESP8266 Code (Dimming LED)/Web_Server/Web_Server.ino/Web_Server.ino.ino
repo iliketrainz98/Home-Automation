@@ -104,9 +104,9 @@ void loop() {
     Serial.println("invalid request");
     client.flush();
     // Send a 400 which means "The client fucked up - try again"
-    String returnString = "HTTP/1.1 400 BAD REQUEST"
-    client.print(s)
-    client.stop()
+    String returnString = "HTTP/1.1 400 BAD REQUEST";
+    client.print(s);
+    client.stop();
     return;
   }
 }
