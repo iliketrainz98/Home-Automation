@@ -84,7 +84,7 @@ void loop() {
     }
     
     int fadeNumber = fadeNumberAsString.toInt();
-    analogueWrite(2, fadeNumber * 10.24);
+    analogWrite(2, fadeNumber * 10.24);
     
     client.flush();
 
