@@ -83,7 +83,7 @@ void loop() {
       fadeNumberSearchLocation++;
     }
     
-    fadeNumber = fadeNumberAsString.toInt();
+    int fadeNumber = fadeNumberAsString.toInt();
     analogueWrite(2, fadeNumber * 10.24);
     
     client.flush();
