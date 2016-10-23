@@ -83,18 +83,18 @@ void loop() {
       fadeNumberSearchLocation++;
     }
     
-    fadeNumber = fadeNumberAsString.toInt();
-    analogueWrite(2, fadeNumber * 10.24);
+    int fadeNumber = fadeNumberAsString.toInt();
+    analogWrite(2, fadeNumber * 10.24);
     
     client.flush();
 
     // Prepare the response
-    String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>\r\nGPIO is now ";
-    s += fadeNumberAsString;
-    s += "</html>\n";
+    String returnString = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>\r\nGPIO is now ";
+    returnString += fadeNumberAsString;
+    returnString += "</html>\n";
 
     // Send the response to the client
-    client.print(s);
+    client.print(returnString);
     delay(1);
     Serial.println("Client disonnected");
     return;
@@ -104,9 +104,9 @@ void loop() {
     Serial.println("invalid request");
     client.flush();
     // Send a 400 which means "The client fucked up - try again"
-    String returnString = "HTTP/1.1 400 BAD REQUEST"
-    client.print(s)
-    client.stop()
+    String returnString = "HTTP/1.1 400 BAD REQUEST";
+    client.print(returnString);
+    client.stop();
     return;
   }
 }
