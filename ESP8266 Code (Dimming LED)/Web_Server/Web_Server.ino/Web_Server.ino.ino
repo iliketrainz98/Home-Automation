@@ -97,35 +97,17 @@ void loop() {
     client.print(s);
     delay(1);
     Serial.println("Client disonnected");
+    return;
   }
   else
   {
     Serial.println("invalid request");
     client.flush();
+    // Send a 400 which means "The client fucked up - try again"
     String returnString = "HTTP/1.1 400 BAD REQUEST"
     client.print(s)
     client.stop()
     return;
   }
-  
-  // Match the request
-//   int val;
-//   if (req.indexOf("/gpio/0") != -1)
-//     val = 0;
-//   else if (req.indexOf("/gpio/1") != -1)
-//     val = 1;
-//   else {
-//     Serial.println("invalid request");
-//     client.stop();
-//     return;
-//   }
-
-  // Set GPIO2 according to the request
-  
-  
-  
-
-  // The client will actually be disconnected 
-  // when the function returns and 'client' object is detroyed
 }
 
