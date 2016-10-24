@@ -19,3 +19,29 @@ If you are using a raspberry pi, you will need to install raspbian - this is the
 ## Common pitfalls
 
 ## Instructions
+
+### Install Java ready for OpenHAB
+1. sudo apt-get update
+1. sudo apt-get install default-jre
+
+### Tell apt to trust the OpenHAB Repos
+1. wget -qO - 'https://bintray.com/user/downloadSubjectPublicKey?username=openhab' | sudo apt-key add -
+
+### Add the OpenHAB Repo and install the runtime
+1. echo "deb http://dl.bintray.com/openhab/apt-repo stable main" | sudo tee /etc/apt/sources.list.d/openhab.list
+1. sudo apt-get update
+1. sudo apt-get install openhab-runtime
+
+### Start OpenHAB on boot
+1. sudo systemctl enable openhab.service
+1. sudo systemctl start openhab.service
+
+At this point it may take a little while to start, after a couple of minutes, you should be able to point your browser at:
+
+http://<rpi-ip>:8080/openhab.app
+
+you should see a page that looks like:
+
+![Kiku](images/openhab-after-install.png)
+
+This is fine for now, we will get to how sitemaps and items work when we start adding devices to OpenHAB
