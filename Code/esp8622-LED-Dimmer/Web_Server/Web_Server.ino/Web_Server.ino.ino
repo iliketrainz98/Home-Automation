@@ -2,9 +2,8 @@
  *  This sketch demonstrates how to set up a simple HTTP-like server.
  *  The server will set a GPIO pin depending on the request
  *    http://server_ip/gpio/0 will set the GPIO2 low,
- *    http://server_ip/gpio/1 will set the GPIO2 high
- *  server_ip is the IP address of the ESP8266 module, will be 
- *  printed to Serial when the module is connected.
+ *    http://server_ip/gpio/100 will set the GPIO2 high
+ *  This version of the server allows pwm input
  */
 
 #include <ESP8266WiFi.h>
@@ -69,11 +68,50 @@ void loop() {
   if(startOfGpioString != -1)
   {
     /*
+     * -1 -> undefined
+     * 1  -> digital
+     * 2  -> pwm
+     */
+    int controlType = -1;
+    int lengthOfTypeString = 0;
+    
+    if(req.indexOf("/digital/") != 1)
+    {
+      /*
+       * Request looks like:
+       *   /gpio/digital/50
+       */
+      controlType = 1;
+      lengthOfTypeString = 8;
+    }
+    else if(req.indexOf("/pwm/") != 1)
+    {
+      /*
+       * Request looks like:
+       *   /gpio/pwm/50
+       */
+      controlType = 2;
+      lengthOfTypeString = 4;
+    }
+    else
+    {
+      /*
+       * Default to controlType=pwm to allow a url that looks like:
+       *   /gpio/50
+       * instead of the new format that looks like:
+       *   /gpio/pwm/50
+       *
+       * Here purely for backwards-compatability.
+       */
+      controlType = 2;
+      lengthOfTypeString = 0;
+    }
+    
+    
+    /*
      * 6 = length of /gpio/
      */
-    int startOfFadeString = startOfGpioString + 6;
-    
-    
+    int startOfFadeString = startOfGpioString + 6 + lengthOfTypeString;
     
     int fadeNumberSearchLocation = startOfFadeString;
     String fadeNumberAsString = "";
@@ -84,7 +122,21 @@ void loop() {
     }
     
     int fadeNumber = fadeNumberAsString.toInt();
-    analogWrite(2, fadeNumber * 10.24);
+    
+    if(controlType == 1)
+    {
+      digitalWrite(2, fadeNumber);
+    }
+    else if(controlType == 2)
+    {
+      analogWrite(2, fadeNumber * 10.24);
+    }
+    else
+    {
+      /*
+       * We should never arrive here, but handle it anyway.
+       */
+    }
     
     client.flush();
 
